@@ -6,7 +6,7 @@ spoiler: ¿Cuál es el 🐞(<i>n</i>) de tu API?
 
 Cuando escribes código cuyo rendimiento es importante es una buena idea tener en cuenta su complejidad algorítmica. Esta se expresa a menudo con la [notación O grande](https://rob-bell.net/2009/06/a-beginners-guide-to-big-o-notation/) (*Big-O* en inglés).
 
-O grande es una medida de **cuán lento puede ser tu código a medida que añades mas datos**. Por ejemplo, si un algoritmo de ordenamiento tiene una complejidad O(<i>n<sup>2</sup></i>), si se  ordenan 50 veces más elementos será aproximadamente 50<sup>2</sup> = 2,500 veces más lento. La notación O grande no te da un número exacto, pero te ayuda a entender como *escala* un aloritmo.
+O grande es una medida de **cuán lento puede ser tu código a medida que añades mas datos**. Por ejemplo, si un algoritmo de ordenamiento tiene una complejidad O(<i>n<sup>2</sup></i>), si se  ordenan 50 veces más elementos será aproximadamente 50<sup>2</sup> = 2,500 veces más lento. La notación O grande no te da un número exacto, pero te ayuda a entender como *escala* un algoritmo.
 
 Algunos ejemplos: O(<i>n</i>), O(<i>n</i> log <i>n</i>), O(<i>n<sup>2</sup></i>), O(<i>n!</i>).
 
