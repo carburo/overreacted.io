@@ -58,17 +58,17 @@ function trySubmit() {
 }
 ```
 
-The problem with this code isn’t that it’s “ugly”. We’re not talking about aesthetics. **The problem is that if there is a bug in this code, I don’t know where to start looking.**
+El problema de este código no es que sea «feo». No se trata de una cuestión estética. **El problema es que si hay un error en este código, no sé dónde empezar a buscar.**
 
-**Depending on the order in which the callbacks and events fire, there is a combinatorial explosion of the number of codepaths this program could take.** In some of them, I’ll see the right messages. In others, I’ll see multiple spinners, failure and error messages together, and possibly crashes.
+**En dependencia del orden en que los *callbacks** y los eventos se disparen, hay una explosión combinatoria del número de caminos en el código que este programa podría tomar.** En algunos, se podrán ver los mensajes correctos. En otros, lo que se mostrará será la mezcla de una multitud de indicadores de carga, mensajes de error y de fallas; y probablemente también ???crashes.
 
-This function has 4 different sections and no guarantees about their ordering. My very non-scientific calculation tells me there are 4×3×2×1 = 24 different orders in which they could run. If I add four more code segments, it’ll be 8×7×6×5×4×3×2×1 — *forty thousand* combinations. Good luck debugging that.
+Esta función tiene 4 secciones diferentes sin garantías sobre su orden. Mi primer cálculo no científico me dice que hay 4×3×2×1 = 24 órdenes diferntes en los que podrían ocurrir. Si añado 4 segmentos más, será 8×7×6×5×4×3×2×1, igual a *cuarenta mil* combinaciones. Te deseo buena suerte si te atreves a depurarlo.
 
-**In other words, the Bug-O of this approach is 🐞(<i>n!</i>)** where *n* is the number of code segments touching the DOM. Yeah, that’s a *factorial*. Of course, I’m not being very scientific here. Not all transitions are possible in practice. But on the other hand, each of these segments can run more than once. <span style="word-break: keep-all">🐞(*¯\\\_(ツ)\_/¯*)</span> might be more accurate but it’s still pretty bad. We can do better.
+**En otras palabras, la notación Bug-O de este enfoque es 🐞(<i>n!</i>)**, donde *n* es el número de segmentos de código que tocan el DOM. Sí, ese es un *factorial*. Por supuesto, no estoy siendo muy científico. No todas las transiciones son posibles en la práctica. Pero por otra parte, cada uno de esos segmentos pueden ejecutarse más de una vez. <span style="word-break: keep-all">🐞(*¯\\\_(ツ)\_/¯*)</span> podría ser más preciso, pero aún es bastante malo. Podemos hacerlo mejor.
 
 ---
 
-To improve the Bug-O of this code, we can limit the number of possible states and outcomes. We don't need any library to do this. It’s just a matter of enforcing some structure on our code. Here is one way we could do it:
+Para mejorar el Bug-O de este código, podemos limitar el número de estados posibles y de resultados. No necesitamos ninguna biblioteca para lograrlo. Es solo cuestión de promover cierta estructura en nuestro código. Esta es una forma de hacerlo:
 
 ```jsx
 let currentState = {
@@ -114,7 +114,7 @@ function setState(nextState) {
 }
 ```
 
-This code might not look too different. It’s even a bit more verbose. But it is *dramatically* simpler to debug because of this line:
+Este código podría no parecer demasiado diferente. Incluso es un poco más verboso. Pero es *dramáticamente* más simple de depurar simplemente por esta línea:
 
 ```jsx{3}
 function setState(nextState) {
@@ -124,11 +124,11 @@ function setState(nextState) {
   // ... the code adding stuff to formStatus ...
 ```
 
-By clearing out the form status before doing any manipulations, we ensure that our DOM operations always start from scratch. This is how we can fight the inevitable [entropy](/the-elements-of-ui-engineering/) — by *not* letting the mistakes accumulate. This is the coding equivalent of “turning it off and on again”, and it works amazingly well.
+Al limpiar el estado del formulario antes de hacer cualquier manipulación, nos aseguramos que nuestras operaciones en el DOM siempre se inician desde cero. Es así como podemos enfrentar a la inevitable [entropía](/the-elements-of-ui-engineering/), al *no* permitir que se acumulen los errores. Este es el equivalente en código de «apaga y vuelve a encender», y funciona increíblemente bien.
 
-**If there is a bug in the output, we only need to think *one* step back — to the previous `setState` call.** The Bug-O of debugging a rendering result is 🐞(*n*) where *n* is the number of rendering code paths. Here, it’s just four (because we have four cases in a `switch`).
+**Si hay solo un error en la salida, solo necesitamos pensar *un* paso hacia atrás (la llamada previa a `setState`.)** La Bug-O de la depuración de un resultado de renderizado es 🐞(*n*) donde *n* es el número de caminos de código de renderizado. Aquí hay solo cuatro (porque tenemos cuatro casos en un `switch`).
 
-We might still have race conditions in *setting* the state, but debugging those is easier because each intermediate state can be logged and inspected. We can also disallow any undesired transitions explicitly:
+Aún así podríamos tener condiciones de carrera al asignar el estado, pero depurarlos es más fácil porque cada estado intermedio puede ser impreso e inspeccionado. También podemos rechazar explícitamente cualquier transición no deseada:
 
 ```jsx
 function trySubmit() {
@@ -138,9 +138,9 @@ function trySubmit() {
   }
 ```
 
-Of course, always resetting the DOM comes with a tradeoff. Naïvely removing and recreating the DOM every time would destroy its internal state, lose focus, and cause terrible performance problems in larger applications.
+Por supuesto, el hecho de reiniciar siempre siempre el DOM tiene una desventaja. Si se elimina y recrea el DOM en cada ocasión se destruiría su estado interno, perdería el foco y causaría terribles problemas en el rendimiento en aplicaciones grandes.
 
-That’s why libraries like React can be helpful. They let you *think* in the paradigm of always recreating the UI from scratch without necessarily doing it:
+Es por eso que bibliotecas como React pueden ser de gran ayuda. Ellas te permiten *pensar* bajo el paradigma de recrear la interfaz de usuario desde cero sin que en realidad ocurra:
 
 ```jsx
 function FormStatus() {
@@ -188,10 +188,10 @@ function FormStatus() {
 }
 ```
 
-The code may look different, but the principle is the same. The component abstraction enforces boundaries so that you know no *other* code on the page could mess with its DOM or state. Componentization helps reduce the Bug-O.
+El código puede parecer distinto, pero el principio es el mismo. La abstracción de un componente impone barreras de manera que sepas que *otro* código en la página no puede afectar su DOM o su estado. El diseño basado en componentes ayuda a reducir la Bug-O.
 
-In fact, if *any* value looks wrong in the DOM of a React app, you can trace where it comes from by looking at the code of components above it in the React tree one by one. No matter the app size, tracing a rendered value is 🐞(*tree height*).
+De hecho, si *cualquier* valor parece incorrecto en el DOM de una aplicación React, puedes rastrearlo al mirar el código de los componentes por encima de él en el árbol de React, uno por uno. Sin importar el tamaño de la aplicación, rastrear un valor renderizado es 🐞(*tamaño del árbol*).
 
-**Next time you see an API discussion, consider: what is the 🐞(*n*) of common debugging tasks in it?** What about existing APIs and principles you’re deeply familiar with? Redux, CSS, inheritance — they all have their own Bug-O.
+**La próxima vez que veas una discusión sobre una API, considera: ¿cuál es el 🐞(*n*) de las tareas comunes de depuración en ella?**. ¿Y qué ocurre con las API y los principios con los que estás ampliamente familiarizado? Redux, CSS, herencia, todos tienen su propio Bug-O.
 
 ---
