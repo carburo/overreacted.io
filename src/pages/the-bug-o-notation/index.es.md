@@ -4,32 +4,32 @@ date: '2019-01-25'
 spoiler: ¿Cuál es el 🐞(<i>n</i>) de tu API?
 ---
 
-When you write performance-sensitive code, it’s a good idea to keep in mind its algorithmic complexity. It is often expressed with the [Big-O notation](https://rob-bell.net/2009/06/a-beginners-guide-to-big-o-notation/).
+Cuando escribes código cuyo rendimiento es importante es una buena idea tener en cuenta su complejidad algorítmica. Esta se expresa a menudo con la [notación O grande](https://rob-bell.net/2009/06/a-beginners-guide-to-big-o-notation/) (*Big-O* en inglés).
 
-Big-O is a measure of **how much slower the code will get as you throw more data at it**. For example, if a sorting algorithm has O(<i>n<sup>2</sup></i>) complexity, sorting ×50 times more items will be roughly 50<sup>2</sup> = 2,500 times slower. Big O doesn’t give you an exact number, but it helps you understand how an algorithm *scales*.
+O grande es una medida de **cuán lento puede ser tu código a medida que añades mas datos**. Por ejemplo, si un algoritmo de ordenamiento tiene una complejidad O(<i>n<sup>2</sup></i>), si se  ordenan 50 veces más elementos será aproximadamente 50<sup>2</sup> = 2,500 veces más lento. La notación O grande no te da un número exacto, pero te ayuda a entender como *escala* un aloritmo.
 
-Some examples: O(<i>n</i>), O(<i>n</i> log <i>n</i>), O(<i>n<sup>2</sup></i>), O(<i>n!</i>).
+Algunos ejemplos: O(<i>n</i>), O(<i>n</i> log <i>n</i>), O(<i>n<sup>2</sup></i>), O(<i>n!</i>).
 
 
-However, **this post isn’t about algorithms or performance**. It’s about APIs and debugging. It turns out, API design involves very similar considerations.
+Sin embargo, **este artículo no es sobre algoritmos o rendimiento**. Se trata de las API y la depuración. Resulta que el diseño de una API involucra consideraciones muy similares.
 
 ---
 
-A significant part of our time goes into finding and fixing mistakes in our code. Most developers would like to find bugs faster. As satisfactory as it may be in the end, it sucks to spend the whole day chasing a single bug when you could have implemented something from your roadmap.
+Una parte significativa de nuestro tiempo se concentra en encontrar y resolver errores en nuestro código. La mayoría de los desarrolladores quisieran encontrar errores más rápido. Si bien puede ser muy satisfactorio al final, no es nada agradable pasarse el día detrás de un error cuando podrías estar concentrado en la implementación de alguna idea que tenías en tus planes.
 
-Debugging experience influences our choice of abstractions, libraries, and tools. Some API and language designs make a whole class of mistakes impossible. Some create endless problems. **But how can you tell which one is which?**
+La experiencia de la depuración influye en nuestra elección de abstracciones, bibliotecas y herramientas. Algunos diseños de API y lenguajes hacen que muchos tipos de errores no puedan ocurrir. Otros crean un sinfín de problemas. **Pero como distingues cuál es cuál.**
 
-Many online discussions about APIs are primarily concerned with aesthetics. But that [doesn’t say much](/optimized-for-change/) about what it feels like to use an API in practice.
+Muchas debates en la web acerca de las API se concentran sobre todo en la estética. Pero eso [no dice mucho](/optimized-for-change/) de cómo se siente usar una API en la práctica.
 
-**I have a metric that helps me think about this. I call it the *Bug-O* notation:**
+**Tengo una métrica que me ayuda a razonar sobre esto. La llamo la notación *Bug-O* (*bug* en inglés puede ser tanto un error informático como un bicho):**
 
 <font size="40">🐞(<i>n</i>)</font>
 
-The Big-O describes how much an algorithm slows down as the inputs grow. The *Bug-O* describes how much an API slows *you* down as your codebase grows.
+La O grande describe cuánto se ralentiza un algoritmo a medida que crece su entrada. La *Bug-O* describe cuánto una API *te* ralentiza a medida que crece tu base de código.
 
 ---
 
-For example, consider this code that manually updates the DOM over time with imperative operations like `node.appendChild()` and `node.removeChild()` and no clear structure:
+Por ejemplo, considera este código que actualiza manualmente el DOM con operaciones imperativas como `node.appendChild()` y `node.removeChild()` y que no tiene una estructura clara:
 
 ```jsx
 function trySubmit() {
